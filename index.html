@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Merge, split, reorder, and rotate PDFs. Free, private, and entirely in your browser.">
+  <meta name="theme-color" content="#f5f7fb">
+  <title>PDF Studio | Private, Browser-Only PDF Tools</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="vendor/pdf-lib.min.js" defer></script>
+  <script src="vendor/jszip.min.js" defer></script>
+  <script src="app.js" type="module"></script>
+</head>
+<body>
+  <main class="page">
+    <header class="brand">
+      <span class="brand-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM14 3v6h6M8 13h8M8 17h5"/>
+        </svg>
+      </span>
+      PDF Studio
+      <span class="brand-note">SMALL TOOL. LESS PAPERWORK.</span>
+    </header>
+
+    <section class="intro" aria-labelledby="page-title">
+      <p class="eyebrow">A LITTLE ORDER FOR YOUR DOCUMENTS</p>
+      <h1 id="page-title">Your pages.<br><span>Your way.</span></h1>
+      <p>Merge, split, and rearrange PDFs. No uploads. No hoops.</p>
+    </section>
+
+    <div class="workspace">
+      <aside class="editor" aria-label="Files and download settings">
+        <section aria-labelledby="add-title">
+          <span class="step">01 / BRING YOUR FILES</span>
+          <h2 id="add-title">Start with a PDF.</h2>
+          <p class="description">One document or a whole stack. Everything happens right here in your browser.</p>
+          <input id="file-input" type="file" accept=".pdf,application/pdf" multiple hidden>
+          <button id="add-files" class="drop-zone" type="button" data-lock disabled>
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+              <path d="M12 16V4m-5 5 5-5 5 5M4 16v4h16v-4"/>
+            </svg>
+            <strong>Choose PDF files</strong>
+            <span>or drop them here</span>
+          </button>
+          <ul id="file-list" class="file-list" aria-label="Loaded files"></ul>
+          <div class="file-summary">
+            <span id="file-summary">No files added yet</span>
+            <button id="clear" class="text-button" type="button" data-lock disabled>Clear all</button>
+          </div>
+        </section>
+
+        <section class="export-section" aria-labelledby="export-title">
+          <span class="step">03 / MAKE IT YOURS</span>
+          <h2 id="export-title">Ready to go?</h2>
+          <label for="export-mode">Download as</label>
+          <select id="export-mode" data-lock disabled>
+            <option value="merge">One PDF (checked pages)</option>
+            <option value="each">Separate PDFs (ZIP)</option>
+            <option value="ranges">Custom page groups (ZIP)</option>
+          </select>
+          <p id="mode-hint" class="hint">Combine checked pages in the order shown. Uncheck pages to leave them out.</p>
+          <div id="ranges-field" hidden>
+            <label for="ranges">Page groups</label>
+            <input id="ranges" placeholder="1-3; 4-6; 7,9" type="text" autocomplete="off"
+              aria-describedby="ranges-hint" data-lock disabled>
+            <p id="ranges-hint" class="hint">Use page numbers shown in the workspace, regardless of checkboxes. Semicolons separate PDFs; commas combine pages.</p>
+          </div>
+          <label for="filename">File name</label>
+          <div class="filename-field">
+            <input id="filename" type="text" value="my-document" maxlength="120" autocomplete="off" data-lock disabled>
+            <span id="extension">.pdf</span>
+          </div>
+          <button id="download" class="button primary" type="button" data-lock disabled>
+            <span id="download-label">Download PDF</span>
+            <span aria-hidden="true">&darr;</span>
+          </button>
+          <p id="export-summary" class="hint">Add some pages to get started.</p>
+          <p class="hint caveat">Page content is preserved, not converted to images. Use unsigned, unencrypted PDFs; interactive forms, bookmarks, and digital signatures are not preserved.</p>
+        </section>
+
+        <div class="privacy">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+            <rect x="5" y="10" width="14" height="11" rx="2"/>
+            <path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"/>
+          </svg>
+          <p><strong>Your documents stay yours.</strong><br>No uploads, no tracking, no account. Files stay in this tab and are cleared when you leave.</p>
+        </div>
+      </aside>
+
+      <section class="pages-panel" aria-labelledby="pages-title">
+        <div class="pages-heading">
+          <div>
+            <span class="step">02 / FIND YOUR FLOW</span>
+            <h2 id="pages-title">A place for every page.</h2>
+          </div>
+          <span id="page-count" class="badge">0 PAGES</span>
+        </div>
+        <p class="description page-instructions" id="page-instructions">Drag pages to reorder, or use their arrow buttons. Check the pages you want to keep.</p>
+        <div class="toolbar" aria-label="Page tools">
+          <div class="selection-tools">
+            <button id="select-all" class="text-button" type="button" data-lock disabled>Select all</button>
+            <span aria-hidden="true">&middot;</span>
+            <button id="select-none" class="text-button" type="button" data-lock disabled>None</button>
+            <span id="selection-count">0 checked</span>
+          </div>
+          <div class="page-tools">
+            <button id="reverse" class="button compact secondary" type="button" data-lock disabled>Reverse order</button>
+            <button id="rotate" class="button compact secondary" type="button" data-lock disabled>Rotate checked</button>
+            <button id="remove" class="button compact secondary" type="button" data-lock disabled>Remove checked</button>
+          </div>
+        </div>
+        <div id="empty" class="empty">
+          <div class="empty-pages" aria-hidden="true">
+            <svg viewBox="0 0 80 96" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="8" y="8" width="64" height="80" rx="7"/>
+              <path d="M24 32h32M24 44h32M24 56h23M24 68h16"/>
+            </svg>
+          </div>
+          <h3>A fresh start.</h3>
+          <p>Add your PDFs and give every page<br>a place in the story.</p>
+          <span class="badge">100% IN YOUR BROWSER</span>
+        </div>
+        <ol id="pages" class="page-grid" aria-label="PDF pages in output order" aria-describedby="page-instructions"></ol>
+      </section>
+    </div>
+    <div class="feedback">
+      <p id="status" role="status" aria-live="polite">Loading PDF tools...</p>
+      <p id="error" class="error" role="alert" hidden></p>
+      <p id="notice" class="notice" role="status" hidden></p>
+    </div>
+    <footer>No sign-up. No server. Just your pages, in a better place.</footer>
+    <noscript><p class="error">Please enable JavaScript to manage PDFs. Your files will stay in your browser.</p></noscript>
+  </main>
+  <template id="page-template">
+    <li class="page-card" draggable="true">
+      <div class="card-header">
+        <label class="page-check"><input type="checkbox"><span class="page-number"></span></label>
+        <span class="drag-handle" aria-hidden="true" title="Drag to reorder">&#8942;&#8942;</span>
+      </div>
+      <div class="thumbnail">
+        <canvas hidden></canvas>
+        <span class="thumbnail-status">Waiting for preview</span>
+      </div>
+      <p class="source-name"></p>
+      <p class="source-page"></p>
+      <div class="card-actions">
+        <button type="button" data-action="earlier" title="Move earlier">&larr;</button>
+        <button type="button" data-action="rotate" title="Rotate clockwise">&#8635;</button>
+        <button type="button" data-action="remove" title="Remove page">&times;</button>
+        <button type="button" data-action="later" title="Move later">&rarr;</button>
+      </div>
+    </li>
+  </template>
+</body>
+</html>
