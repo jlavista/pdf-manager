@@ -1,4 +1,4 @@
-# PDF Studio
+# absolutely free pdf manager
 
 A static, client-side PDF workspace styled to match [Link to QR](https://jlavista.github.io/qr-code/). No backend, build step, accounts, analytics, CDN requests, or file uploads.
 
