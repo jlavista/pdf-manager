@@ -4,7 +4,9 @@ A static, client-side PDF workspace styled to match [Link to QR](https://jlavist
 
 ## Use
 
-Add or drop multiple PDFs. Drag page cards or use their arrow buttons to reorder them. Check/uncheck pages, rotate them, reverse the order, or remove pages and entire files.
+Add or drop PDFs or images. Drag page cards or use their arrow buttons to reorder them. Check/uncheck pages, rotate them, reverse the order, or remove pages and entire files.
+
+- **Image to PDF:** choose or drop PNG, JPEG, or WebP images, then click **Download PDF**. Each image becomes one edge-to-edge, image-sized page at 96 DPI, preserving aspect ratio, photo orientation, and transparency. Multiple images can become one PDF, or be mixed with existing PDF pages. Animated images use their first frame. Images exceeding PDF's 200-inch page limit are fitted within it without cropping.
 
 - **One PDF:** merge checked pages in workspace order, or extract just the pages you need.
 - **Separate PDFs:** download each checked page as a PDF inside a ZIP.
@@ -38,7 +40,7 @@ Browser distributions and supporting fonts, character maps, and WASM decoders ar
 
 | Library | Version | License | Purpose |
 |---|---|---|---|
-| [pdf-lib](https://github.com/Hopding/pdf-lib) | 1.17.1 | MIT | PDF loading, copying, flattening, rotation, and export |
+| [pdf-lib](https://github.com/Hopding/pdf-lib) | 1.17.1 | MIT | Image-to-PDF conversion, PDF loading, copying, flattening, rotation, and export |
 | [PDF.js](https://github.com/mozilla/pdf.js) | 5.7.284 | Apache-2.0 | Lazy page previews |
 | [JSZip](https://github.com/Stuk/jszip) | 3.10.1 | MIT or GPL-3.0 | Bundling split PDFs |
 

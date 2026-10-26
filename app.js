@@ -217,6 +217,62 @@ async function renderPreview(page) {
   }
 }
 
+async function imageToPdf(file) {
+  // Decode in the browser to honor photo orientation and normalize all formats to PNG.
+  const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+  const canvas = document.createElement("canvas");
+  try {
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("Your browser could not create an image canvas.");
+    context.drawImage(bitmap, 0, 0);
+    const png = await new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (blob) resolve(blob);
+        else reject(new Error("This image could not be converted. Try a smaller image."));
+      }, "image/png");
+    });
+    const doc = await window.PDFLib.PDFDocument.create();
+    const image = await doc.embedPng(await png.arrayBuffer());
+    // Use 96 DPI, keeping the entire image within PDF's 200-inch page limit.
+    const scale = Math.min(72 / 96, 14400 / image.width, 14400 / image.height);
+    const width = image.width * scale;
+    const height = image.height * scale;
+    doc.addPage([width, height]).drawImage(image, { x: 0, y: 0, width, height });
+    return { doc, bytes: await doc.save() };
+  } finally {
+    bitmap.close();
+    canvas.width = 0;
+    canvas.height = 0;
+  }
+}
+
+async function loadSourceFile(file) {
+  const isPdf = /\.pdf$/i.test(file.name) || file.type === "application/pdf";
+  const isImage = /\.(png|jpe?g|webp)$/i.test(file.name) || /^image\/(png|jpeg|webp)$/i.test(file.type);
+  if (!isPdf && !isImage) throw new Error("Choose a PDF, PNG, JPEG, or WebP file.");
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  if (!isPdf) {
+    const isPng = [137, 80, 78, 71, 13, 10, 26, 10].every((byte, index) => bytes[index] === byte);
+    const isJpeg = bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255;
+    const isWebp = [82, 73, 70, 70].every((byte, index) => bytes[index] === byte) &&
+      [87, 69, 66, 80].every((byte, index) => bytes[index + 8] === byte);
+    if (!isPng && !isJpeg && !isWebp) throw new Error("This is not a valid PNG, JPEG, or WebP image.");
+    return imageToPdf(file);
+  }
+  const doc = await window.PDFLib.PDFDocument.load(bytes);
+  if (doc.isEncrypted) throw new Error("Password-protected PDFs are not supported. Save an unencrypted copy first.");
+  if (!doc.getPageCount()) throw new Error("This PDF has no pages.");
+  // Flatten forms on import so field appearances survive copying into a new PDF.
+  const form = doc.getForm();
+  if (form.getFields().length) {
+    form.flatten({ updateFieldAppearances: false });
+    return { doc, bytes: await doc.save() };
+  }
+  return { doc, bytes };
+}
+
 async function addFiles(fileList) {
   if (busy || !ready) return;
   const files = [...fileList];
@@ -229,23 +285,10 @@ async function addFiles(fileList) {
     for (const [index, file] of files.entries()) {
       $("status").textContent = `Opening file ${index + 1} of ${files.length}: ${file.name}`;
       try {
-        if (!/\.pdf$/i.test(file.name) && file.type !== "application/pdf") {
-          throw new Error("Choose a PDF file.");
-        }
-        const bytes = new Uint8Array(await file.arrayBuffer());
-        const doc = await window.PDFLib.PDFDocument.load(bytes);
-        if (doc.isEncrypted) throw new Error("Password-protected PDFs are not supported. Save an unencrypted copy first.");
-        if (!doc.getPageCount()) throw new Error("This PDF has no pages.");
-        // Flatten forms on import so field appearances survive copying into a new PDF.
-        const form = doc.getForm();
-        let previewBytes = bytes;
-        if (form.getFields().length) {
-          form.flatten({ updateFieldAppearances: false });
-          previewBytes = await doc.save();
-        }
+        const { doc, bytes } = await loadSourceFile(file);
         const source = {
           id: `source-${nextId++}`, name: file.name, size: file.size,
-          bytes: previewBytes, doc, count: doc.getPageCount(), color: colors[nextId % colors.length],
+          bytes, doc, count: doc.getPageCount(), color: colors[nextId % colors.length],
           previewPromise: null
         };
         sources.set(source.id, source);
@@ -256,7 +299,7 @@ async function addFiles(fileList) {
       } catch (error) {
         console.error(`Could not open ${file.name}:`, error);
         const encrypted = error.name === "EncryptedPDFError" || /encrypted/i.test(error.message);
-        errors.push(`${file.name}: ${encrypted ? "Password-protected PDFs are not supported. Save an unencrypted copy first." : `Could not open this PDF. ${error.message}`}`);
+        errors.push(`${file.name}: ${encrypted ? "Password-protected PDFs are not supported. Save an unencrypted copy first." : `Could not open this file. ${error.message}`}`);
       }
     }
     syncPages();
@@ -533,7 +576,7 @@ async function initialize() {
     if (!window.PDFLib || !window.JSZip) throw new Error("A required PDF library did not load.");
     ready = true;
     updateControls();
-    $("status").textContent = "Add your PDFs to get started. Nothing leaves your browser.";
+    $("status").textContent = "Add PDFs or images to get started. Nothing leaves your browser.";
   } catch (error) {
     console.error("PDF tools failed to initialize:", error);
     showError("PDF tools could not load. Serve this folder over HTTP (or GitHub Pages) in a current browser, then refresh. Make sure the vendor folder is included.");

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Merge, split, reorder, and rotate PDFs. Free, private, and entirely in your browser.">
+  <meta name="description" content="Convert images to PDF. Merge, split, reorder, and rotate PDFs. Free, private, and entirely in your browser.">
   <meta name="theme-color" content="#f5f7fb">
   <title>absolutely free pdf manager | Private, Browser-Only PDF Tools</title>
   <link rel="icon" href="icon.svg" type="image/svg+xml">
@@ -27,23 +27,24 @@
     <section class="intro" aria-labelledby="page-title">
       <p class="eyebrow">A LITTLE ORDER FOR YOUR DOCUMENTS</p>
       <h1 id="page-title">Your pages.<br><span>Your way.</span></h1>
-      <p>Merge, split, and rearrange PDFs. No uploads. No hoops.</p>
+      <p>Merge, split, rearrange, or turn images into PDFs. No uploads. No hoops.</p>
     </section>
 
     <div class="workspace">
       <aside class="editor" aria-label="Files and download settings">
         <section aria-labelledby="add-title">
           <span class="step">01 / BRING YOUR FILES</span>
-          <h2 id="add-title">Start with a PDF.</h2>
-          <p class="description">One document or a whole stack. Everything happens right here in your browser.</p>
-          <input id="file-input" type="file" accept=".pdf,application/pdf" multiple hidden>
+          <h2 id="add-title">A PDF. Or a picture.</h2>
+          <p class="description">Bring your documents or turn images into PDF pages. Everything happens right here in your browser.</p>
+          <input id="file-input" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,application/pdf,image/png,image/jpeg,image/webp" multiple hidden>
           <button id="add-files" class="drop-zone" type="button" data-lock disabled>
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
               <path d="M12 16V4m-5 5 5-5 5 5M4 16v4h16v-4"/>
             </svg>
-            <strong>Choose PDF files</strong>
+            <strong>Choose PDFs or images</strong>
             <span>or drop them here</span>
           </button>
+          <p class="hint">Image to PDF: add PNG, JPEG, or WebP images, then choose Download PDF. One image becomes one page.</p>
           <ul id="file-list" class="file-list" aria-label="Loaded files"></ul>
           <div class="file-summary">
             <span id="file-summary">No files added yet</span>
@@ -119,7 +120,7 @@
             </svg>
           </div>
           <h3>A fresh start.</h3>
-          <p>Add your PDFs and give every page<br>a place in the story.</p>
+          <p>Add PDFs or images and give every page<br>a place in the story.</p>
           <span class="badge">100% IN YOUR BROWSER</span>
         </div>
         <ol id="pages" class="page-grid" aria-label="PDF pages in output order" aria-describedby="page-instructions"></ol>
