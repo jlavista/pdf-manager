@@ -1,4 +1,4 @@
-# JustTools - PDF Manager
+# JustTools / PDF Manager
 
 100% free, No ads. 100% private, No uploads. No tricks. Just tools.
 
