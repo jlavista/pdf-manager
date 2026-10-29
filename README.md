@@ -1,6 +1,8 @@
-# absolutely free pdf manager
+# JustTools - PDF Manager
 
-A static, client-side PDF workspace styled to match [Link to QR](https://jlavista.github.io/qr-code/). No backend, build step, accounts, analytics, CDN requests, or file uploads.
+100% free, No ads. 100% private, No uploads. No tricks. Just tools.
+
+A static, client-side PDF workspace styled to match the [JustTools QR-code generator](https://jlavista.github.io/qr-code/). No backend, build step, accounts, analytics, CDN requests, or file uploads.
 
 ## Use
 
