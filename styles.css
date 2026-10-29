@@ -112,6 +112,9 @@ input[type="checkbox"] { width: 16px; height: 16px; margin: 0; accent-color: #38
 .error { color: #b42336; font-size: 13px; line-height: 1.6; white-space: pre-line; overflow-wrap: anywhere; }
 .notice { color: #856024; white-space: pre-line; }
 footer { text-align: center; color: #737f91; font-size: 12px; padding: 22px 0 0; line-height: 1.8; }
+footer a { display: block; margin-top: 8px; color: #386d57; text-underline-offset: 3px; }
+footer a:hover { color: #1c3a2e; }
+footer a:focus-visible { outline: 3px solid #a8d9c1; outline-offset: 3px; border-radius: 4px; }
 
 @media (max-width: 950px) {
   .workspace { grid-template-columns: 300px minmax(0, 1fr); }
