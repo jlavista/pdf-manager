@@ -2,7 +2,7 @@
 
 100% free, No ads, all happen on the browsers, 100% private, No uploads. No tricks. Just tools.
 
-A static, client-side PDF workspace styled to match the [JustTools QR-code generator](https://jlavista.github.io/qr-code/). No backend, build step, accounts, analytics, CDN requests, or file uploads.
+A static, client-side PDF workspace styled to match the [JustTools QR-code generator](https://jlavista.github.io/qr-code/). No backend, build step, accounts, or document uploads. Cookie-free traffic analytics are provided by Cloudflare.
 
 ## Use
 
@@ -38,7 +38,7 @@ All asset paths are relative, so project sites such as `https://username.github.
 
 ## Libraries
 
-Browser distributions and supporting fonts, character maps, and WASM decoders are vendored so runtime requests stay on your own site:
+Browser distributions and supporting fonts, character maps, and WASM decoders are vendored, so PDF processing assets stay on your own site. The optional Cloudflare analytics beacon is loaded externally:
 
 | Library | Version | License | Purpose |
 |---|---|---|---|
@@ -47,3 +47,9 @@ Browser distributions and supporting fonts, character maps, and WASM decoders ar
 | [JSZip](https://github.com/Stuk/jszip) | 3.10.1 | MIT or GPL-3.0 | Bundling split PDFs |
 
 Upstream license files are included in `vendor` and the PDF.js asset directories. Distribution files were obtained from the corresponding versioned npm packages via jsDelivr. Retain these licenses when redistributing.
+
+## Analytics and privacy
+
+The footer includes a Cloudflare Web Analytics disclosure. The standard cookie-free beacon measures page traffic and performance; no custom events, form values, filenames, document contents, or entered QR URLs are sent by the app. Analytics makes requests to Cloudflare separately from local PDF processing. Blocking or failing to load the beacon does not prevent using the tool.
+
+The public beacon token is shared with the JustTools home page and QR Code Generator under the hostname `jlavista.github.io`. View the tools separately by page path in Cloudflare Web Analytics. Hosting and analytics still receive ordinary network requests; "No uploads" refers to user documents and entered links.
